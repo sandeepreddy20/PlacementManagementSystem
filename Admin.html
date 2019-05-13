@@ -1,158 +1,222 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="admin_style.css">
 
-<!--    FIREBASE SCRIPT -->
+          <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/5.11.1/firebase-app.js"></script>
 
-<!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/5.11.1/firebase-app.js"></script>
-    
-<!-- TODO: Add SDKs for Firebase products that you want to use 
+<!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#config-web-app -->
      <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-app.js"></script>
      <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-storage.js"></script>
      <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase-database.js"></script>     
-     <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.8.4/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyCNFelgMXqVWAIIkt6XAWLhX0TT9XAttnQ",
+        authDomain: "placement-d8d13.firebaseapp.com",
+        databaseURL: "https://placement-d8d13.firebaseio.com",
+        projectId: "placement-d8d13",
+        storageBucket: "placement-d8d13.appspot.com",
+        messagingSenderId: "98734404464",
+        appId: "1:98734404464:web:7141f5e145fb0583"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var database=firebase.database();
+    var storage=firebase.storage();
+    </script>
 
-<script>
-// Your web app's Firebase configuration>
-  var firebaseConfig = {
-    apiKey: "AIzaSyCNFelgMXqVWAIIkt6XAWLhX0TT9XAttnQ",
-    authDomain: "placement-d8d13.firebaseapp.com",
-    databaseURL: "https://placement-d8d13.firebaseio.com",
-    projectId: "placement-d8d13",
-    storageBucket: "placement-d8d13.appspot.com",
-    messagingSenderId: "98734404464",
-    appId: "1:98734404464:web:7141f5e145fb0583"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  var database=firebase.database();
+    
 
-</script>
+    <script>
 
-<script>
-        var query = database.ref().child('Drives/');    //Referance of Drives
-        var k=-1;  
-        query.once("value").then(function(snapshot){
-        snapshot.forEach(function(childSnapshot){
-            var i = childSnapshot.key;              //child values(mmdd)
-            var q= database.ref().child('Drives/'+i+'/');   //Refernce of Drives->values(mmdd)
-            //alert(q);
-            var newdiv = document.createElement("div");
-            newdiv.className = "card";                      //creating div for each value
-            document.getElementsByClassName("leftcolumn")[0].appendChild(newdiv);
-
-                 q.once("value").then(function(snapshot){
-                 snapshot.forEach(function(childSnapshot){
-                 var j= childSnapshot.key;              //j= company or date or url
-                 var l=0;
-                 if(j=="COMPANY"){
-                     k=k+1;
-                    var childData = childSnapshot.val();
-                    var x = document.getElementsByClassName("card");
-                    x[k].innerHTML+=("<b>COMPANY NAME :"+childData +"</b><br/><br/>");
-                 }
-                else  
-                    if(j=="Date")
-                    {
+        function viewcmp()
+        {
+            var query = database.ref().child('Drives/');    //Referance of Drives
+            var k=-1;  
+            query.once("value").then(function(snapshot){
+            snapshot.forEach(function(childSnapshot){
+                var i = childSnapshot.key;              //child values(mmdd)
+                var q= database.ref().child('Drives/'+i+'/');   //Refernce of Drives->values(mmdd)
+                //alert(q);
+                        q.once("value").then(function(snapshot){
+                        snapshot.forEach(function(childSnapshot){
+                        var j= childSnapshot.key;              //j= company or date or url
+                        var l=0;
+                        if(j=="COMPANY"){
+                            k=k+1;
                         var childData = childSnapshot.val();
-                        var x = document.getElementsByClassName("card");
-                        x[k].innerHTML+=("Date(yyyy-mm-dd) :"+childData+"<br/><br/>");
-                    }
-                    else 
-                        if(j=="URL")
-                        {
-                            var childData=childSnapshot.val();
-                            var x = document.getElementsByClassName("card");
-                            x[k].innerHTML+=("URL :"+"<a href="+childData+">"+childData+"</a><br/><br/>");
+                        var x = document.getElementById("view");
+                        x.innerHTML+=("<br/><b>"+(k+1)+" "+"COMPANY NAME :"+childData +"</b><br/><br/>");
                         }
-                        else
-                            if(j=="files")
-                                {
-                                    var n;
-                                    var x = document.getElementsByClassName("card");
-                                    x[k].innerHTML+=("Files:<br/>");
-                                    var z=database.ref().child('Drives/'+i+'/'+j+'/');
-                                    n=k;
-                                    z.once("value").then(function(snapshot){
-                                        snapshot.forEach(function(childSnapshot){
-                                            var name=childSnapshot.key;
-                                            var childData=childSnapshot.val();
-                                            x[n].innerHTML+=("<a href="+childData+">"+name+"</a><br/>");
-                                            })                                        
-                                    })
-                                }
+                        else  
+                        if(j=="Date")
+                        {
+                            var childData = childSnapshot.val();
+                            var x = document.getElementById("view");
+                            x.innerHTML+=("Date(yyyy-mm-dd) :"+childData+"<br/><br/>");
+                        }
+                        else 
+                            if(j=="URL")
+                            {
+                                var childData=childSnapshot.val();
+                                var x = document.getElementById("view");
+                                x.innerHTML+=("URL :"+"<a href="+childData+">"+childData+"</a><br/><br/>");
+                            }
+                            /*else
+                                if(j=="files")
+                                    {
+                                        var n;
+                                        var x = document.getElementById("view");
+                                        x.innerHTML+=("Files:<br/>");
+                                        var z=database.ref().child('Drives/'+i+'/'+j+'/');
+                                        n=k;
+                                        z.once("value").then(function(snapshot){
+                                            snapshot.forEach(function(childSnapshot){
+                                                var name=childSnapshot.key;
+                                                var childData=childSnapshot.val();
+                                                x.innerHTML+=("<a href="+childData+">"+name+"</a><br/>");
+                                                })                                        
+                                        })
+                                    }*/
+                        })
                     })
                 })
             })
+        }
+    </script>
+
+
+    <script>
+        function addcmp() 
+        {
+            var cmp=document.getElementById("cmp").value;
+            var str=document.getElementById("dt").value;
+            var url=document.getElementById("url").value;
+            var res = str.substr(5, 2);
+            var res2= str.substr(8, 2) ;
+            var res3=(res.concat(res2)).concat("_"+cmp);
+            var q1 = database.ref('Drives/'+res3+"/COMPANY").set(cmp);
+            var q2 = database.ref('Drives/'+res3+"/Date").set(str);
+            var q3 = database.ref('Drives/'+res3+"/URL").set(url);
+
+            
+            var files = document.getElementById("upload_file").files; 
+            var x=0; var name=[];
+            for (var i = 0; i < files.length; i++)
+            {
+                var storageRef=firebase.storage().ref('files/'+res3+'/'+files[i].name);
+                name[i]=files[i].name;
+                var uploadTask=storageRef.put(files[i]);
+                  // Register three observers:
+                    // 1. 'state_changed' observer, called any time the state changes
+                    // 2. Error observer, called on failure
+                    // 3. Completion observer, called on successful completion
+                uploadTask.on('state_changed', function(snapshot){
+                    // Observe state change events such as progress, pause, and resume
+                    // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                    switch (snapshot.state) {
+                        case firebase.storage.TaskState.PAUSED: // or 'paused'
+                        console.log('Upload is paused');
+                        break;
+                        case firebase.storage.TaskState.RUNNING: // or 'running'
+                        console.log('Upload is running');
+                        break;
+                    }
+                    }, function(error) {
+                    // Handle unsuccessful uploads
+                    }, function() {
+                    // Handle successful uploads on complete
+                    // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+                console.log('File available at', downloadURL);
+                var n=name[x];
+                console.log(name[x]+" "+x)
+                var nm=n.slice(0,n.indexOf("."))
+                var q4 = database.ref('Drives/'+res3+"/files/"+nm).set(downloadURL);
+                x=x+1;
+                /*var updates={};
+                var durl=downloadURL;
+                var n=name[x];
+                var nm=n.slice(0,n.indexOf("."))
+                alert(x);
+                var postData={url:durl};
+                updates['Drives/'+res3+'/files'+'/'+nm]=postData;
+                firebase.database().ref().update(updates);
+                x=x+1;
+                });*/
+            })
         })
-
-
-/*function for loader*/
-var myVar;
-function myFunction() {
-myVar = setTimeout(showPage, 1000);
-}
-
-function showPage() {
-document.getElementById("loader").style.display = "none";
-//document.getElementById("myDiv").style.display = "block";
-}
-
-</script>
+    }
+    alert("Added Successfully");
+    }
+    </script>
+    
+    
+    <script>
+        function delcmp()
+        {
+            var del=document.getElementById("del").value;
+            var query = database.ref().child('Drives/');  
+            query.once("value").then(function(snapshot)
+            {
+                    snapshot.forEach(function(childSnapshot)
+                    {
+                        var i = childSnapshot.key;
+                        var q= database.ref().child('Drives/'+i+'/'); 
+                        q.once("value").then(function(snapshot)
+                        {
+                                snapshot.forEach(function(childSnapshot)
+                                {
+                                    var j= childSnapshot.key;
+                                    if(j=="COMPANY"){
+                                    var childData = childSnapshot.val();
+                                    if(childData==del)
+                                    {
+                                        q.remove();
+                                        alert("REMOVED SUCCESSFULLY");
+                                    }
+                                }
+            
+                                })
+                        })
+                    })
+            })
+        }
+        
+    </script>
 
 
 </head>
-
-<body onload="myFunction()">
-
-    <div class="header">
-        <img src="logo.jpg" width="1000" height="300"></div>
-    </div>
-    </br>
-    <div class="marq">
-        <marquee width="75%" direction="right" height="75%"> <b>CHECK OUT THE LATEST UPDATES ABOUT PLACEMENTS</b>   
-                </marquee>
-    </div>
-    <div class="row">
-            <div class="leftcolumn">
-                  <div id="loader"></div>
-            </div>
-
-                <!--Here all the details are fecthed and displayed-->
-
-            <div class="rightcolumn">
-                
-                    <div class="cardr">
-                        <h2><a href="http://cvr.ac.in/home4/index.php/placements-2019" style="color:rgb(0, 0, 0)">
-                                    Record Placements for 2018-2019 batch<a></h2></br>
-                        <h3>Visit Our Website</h3>
-                        <img src="web.png" width="25px" height="25px"></img>&nbsp&nbsp<a  href="http://cvr.ac.in/home4/" style="color:rgb(0, 0, 0)">
-                                    <b>CVR COLLLEGE OF ENGINEERING</b></a>                       
-                    </div>
-
-                
-                <!--Contact US-->
-                <div class="cardr">
-                    <h2>Contact Us</h2>
-                    <img src="call.png" width="20px" height="20px"><b>&nbsp 08414661601 </b></img></br>
-                    <img src="mail.png" width="18px" height="18px"><b>&nbsp  E-Mail </b></img></br>
-                    <strong>&nbsp&nbsp&nbsp&nbsp&nbsp principal@cvr.ac.in</strong></br>
-                    <strong>&nbsp&nbsp&nbsp&nbsp&nbsp placement@cvr.ac.in</strong>
-                    <h2>Follow Us</h2>
-                    <img src="twitter.png" width="30px" height="30px">&nbsp&nbsp<b>@cvrcoenews </b></img>
-                </div>
-            </div>
+<body>
+    <form id="demo" class="card">
+        Company  name :&nbsp; &nbsp;&nbsp;<input type="text" id="cmp" name="cmp"><br><br>
+        Date of drive :&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="date" id="dt" name="date"><br><br>
+        URL of company:&nbsp; &nbsp;&nbsp;&nbsp;<input type="url" id="url" name="url"><br><br>
+        Files to upload:&nbsp;&nbsp;&nbsp;<input type="file" id="upload_file" multiple><br/><br/>
+        <div class=>
+                <input type="button" value="Update" onClick="addcmp()"></div><br/>
+        </div></form></br>
+        <div class="card" id="view">
+                <input type="button" value="View Companies" onClick="viewcmp()"><br/><br/>
+        </div ><br/>
+        <div class="card">
+                Type the company name to be deleted:&nbsp; &nbsp;&nbsp; &nbsp;<input type="text" id="del" name="dl"><br/>
+                <input type="button" value="Delete" onClick="delcmp()">
+                &nbsp; &nbsp;
         </div>
-              
-        <div class="footer">
-                <h3>Copyrights &copy2019 CVR College of Engineering,All rights Reseverd</h3>
-        </div>
-              
-</body>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+</body>    
 </html>
